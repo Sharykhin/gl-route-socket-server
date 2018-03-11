@@ -7,6 +7,7 @@ import (
 	//"fmt"
 	"fmt"
 	"time"
+	"github.com/Sharykhin/gl-route-socket-server/middleware"
 )
 
 var upgrader = websocket.Upgrader{
@@ -59,7 +60,7 @@ func Echo(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", Echo)
+	http.Handle("/", middleware.Chain(http.HandlerFunc(Echo), middleware.JWT))
 
 	log.Fatal(http.ListenAndServe(":1234", nil))
 }
