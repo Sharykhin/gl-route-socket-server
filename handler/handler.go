@@ -44,14 +44,15 @@ func handle(w http.ResponseWriter, r *http.Request) {
 			fmt.Printf("could not read a message: %v", err)
 			break
 		}
+
+		log.Printf("recv: %s, type %v", message, mt)
+
 		var em entity.Message
 		err = json.Unmarshal(message, &em)
 		if err != nil {
 			fmt.Printf("could not parse income message: %v", err)
 			break
 		}
-
-		log.Printf("recv: %s, type %v", message, mt)
 
 		switch em.Action {
 		case "message":
@@ -70,6 +71,7 @@ func sendMessage(c *websocket.Conn, mt int, em entity.Message) {
 	}
 	for _, cc := range connections {
 		if cc != c {
+			fmt.Printf("send message from %s \n", payload.Text)
 			err := cc.WriteMessage(mt, []byte(payload.Text))
 			if err != nil {
 				log.Println("write:", err)
@@ -88,6 +90,7 @@ func removeCon(c *websocket.Conn, e *websocket.CloseError) {
 			m.Unlock()
 		}
 	}
+	fmt.Println(connections)
 }
 
 func appendConnection(c *websocket.Conn) {

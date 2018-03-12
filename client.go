@@ -25,6 +25,8 @@ var output = `
 
             sock.onopen = function() {
                 console.log("connected to " + wsuri);
+   				//var m = JSON.stringify({action: "message", "user_id":"12", payload:{text:"message"}})
+            	//sock.send(m);
             }
 
             sock.onclose = function(e) {
@@ -53,6 +55,18 @@ var output = `
 		function reconnect() {
 			_init();
 		}
+
+		//_init();
+
+
+
+		//var i = setInterval(function(){
+		//	var m = JSON.stringify({action: "message", "user_id":"12", payload:{text:"message"}})
+        //    sock.send(m);
+		//}, 1000);
+
+
+
 
     </script>
     <h1>WebSocket Echo Test</h1>
