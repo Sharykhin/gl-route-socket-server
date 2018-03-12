@@ -72,7 +72,9 @@ func sendMessage(c *websocket.Conn, mt int, em entity.Message) {
 	for _, cc := range connections {
 		if cc != c {
 			fmt.Printf("send message from %s \n", payload.Text)
+			m.Lock()
 			err := cc.WriteMessage(mt, []byte(payload.Text))
+			m.Unlock()
 			if err != nil {
 				log.Println("write:", err)
 				break
