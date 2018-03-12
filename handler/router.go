@@ -10,6 +10,6 @@ import (
 // Router provides new mux router for socket server
 func Router() http.Handler {
 	r := mux.NewRouter()
-	r.Handle("/", middleware.Chain(http.HandlerFunc(echo), middleware.JWT))
+	r.Handle("/", middleware.Chain(http.HandlerFunc(handle), middleware.JWT))
 	return r
 }

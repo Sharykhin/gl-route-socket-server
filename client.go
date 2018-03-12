@@ -33,15 +33,19 @@ var output = `
 
             sock.onmessage = function(e) {
                 console.log("message received: " + e.data);
+				var a = document.querySelector('#d').innerHTML;
+				a += e.data + '<br/>';
+				document.querySelector('#d').innerHTML = a;
             }
 		}
 
         function send() {
             var msg = document.getElementById('message').value;
-            sock.send(msg);
+			var m = JSON.stringify({action: "message", "user_id":"12", payload:{text:msg}})
+            sock.send(m);
         }
 
-		function close() {
+		function ccc() {
 			console.log('close the connection')
 			sock.close();
 		}
@@ -58,8 +62,9 @@ var output = `
         </p>
     </form>
     <button onclick="send();">Send Message</button>
-	<button type="button" onclick="close();">Close</button>
+	<button type="button" onclick="ccc();">Close</button>
 	<button type="button" onclick="reconnect();">Reconnect</button>
+	<div id="d" style="border: 1px solid #ccc;"></div>
 </body>
 </html>
 `

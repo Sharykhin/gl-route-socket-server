@@ -13,7 +13,7 @@ import (
 var address string
 
 func init() {
-	var address = os.Getenv("HTTP_ADDRESS")
+	address = os.Getenv("HTTP_ADDRESS")
 	if address == "" {
 		address = "127.0.0.1:1234"
 	}
