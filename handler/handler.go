@@ -21,10 +21,17 @@ var (
 	}
 	connections = []*websocket.Conn{}
 	m           = sync.Mutex{}
+	users       = []Connection{}
 )
+
+type Connection struct {
+	conn *websocket.Conn
+	mu   sync.Mutex
+}
 
 func handle(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
+
 	fmt.Println("new connection is coming...")
 
 	if err != nil {
@@ -69,12 +76,12 @@ func sendMessage(c *websocket.Conn, mt int, em entity.Message) {
 		fmt.Printf("could not parse payload: %v", err)
 		return
 	}
-	for _, cc := range connections {
-		if cc != c {
+	for _, u := range users {
+		if u.conn != c {
 			fmt.Printf("send message from %s \n", payload.Text)
-			m.Lock()
-			err := cc.WriteMessage(mt, []byte(payload.Text))
-			m.Unlock()
+			u.mu.Lock()
+			err := u.conn.WriteMessage(mt, []byte(payload.Text))
+			u.mu.Unlock()
 			if err != nil {
 				log.Println("write:", err)
 				break
@@ -96,8 +103,14 @@ func removeCon(c *websocket.Conn, e *websocket.CloseError) {
 }
 
 func appendConnection(c *websocket.Conn) {
+	connection := Connection{
+		conn: c,
+		mu:   sync.Mutex{},
+	}
+
 	m.Lock()
 	connections = append(connections, c)
+	users = append(users, connection)
 	m.Unlock()
 	fmt.Println(connections)
 }
