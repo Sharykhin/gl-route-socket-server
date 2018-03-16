@@ -19,9 +19,8 @@ var (
 			return true
 		},
 	}
-	connections = []*websocket.Conn{}
-	m           = sync.Mutex{}
-	users       = []Connection{}
+	m     = sync.Mutex{}
+	users = []Connection{}
 )
 
 type Connection struct {
@@ -63,7 +62,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 
 		switch em.Action {
 		case "message":
-			go sendMessage(c, mt, em)
+			sendMessage(c, mt, em)
 		}
 
 	}
@@ -92,14 +91,14 @@ func sendMessage(c *websocket.Conn, mt int, em entity.Message) {
 
 func removeCon(c *websocket.Conn, e *websocket.CloseError) {
 	fmt.Printf("connection has been closed by client. Code: %v\n", e.Code)
-	for i, v := range connections {
-		if v == c {
+	for i, u := range users {
+		if u.conn == c {
 			m.Lock()
-			connections = append(connections[:i], connections[i+1:]...)
+			users = append(users[:i], users[i+1:]...)
 			m.Unlock()
 		}
 	}
-	fmt.Println(connections)
+	fmt.Println(users)
 }
 
 func appendConnection(c *websocket.Conn) {
@@ -109,8 +108,7 @@ func appendConnection(c *websocket.Conn) {
 	}
 
 	m.Lock()
-	connections = append(connections, c)
 	users = append(users, connection)
 	m.Unlock()
-	fmt.Println(connections)
+	fmt.Println(users)
 }
